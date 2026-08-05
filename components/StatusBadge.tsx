@@ -1,0 +1,22 @@
+import { statusInfo } from "@/lib/types";
+import type { Status } from "@/lib/types";
+import StatusIcon from "./StatusIcon";
+
+const BADGE: Record<Status, string> = {
+  wishlist: "bg-amber-400/10 text-amber-300 ring-amber-400/30",
+  purchased: "bg-violet-400/10 text-violet-300 ring-violet-400/30",
+  playing: "bg-sky-400/10 text-sky-300 ring-sky-400/30",
+  played: "bg-emerald-400/10 text-emerald-300 ring-emerald-400/30",
+  dropped: "bg-rose-400/10 text-rose-300 ring-rose-400/30",
+};
+
+export default function StatusBadge({ status }: { status: Status }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${BADGE[status]}`}
+    >
+      <StatusIcon status={status} className="h-3 w-3" />
+      {statusInfo(status).label}
+    </span>
+  );
+}

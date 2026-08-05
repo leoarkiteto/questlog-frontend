@@ -1,0 +1,39 @@
+# ── Questlog Frontend — Next.js app ────────────────────────────────────────────
+
+# ── OS / editor junk ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+.fleet/
+.zed/
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ── Environment / secrets ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+!.env.*.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ── Node / Next.js ───────────────────────────────────────────────────────────
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+.eslintcache
+
+# ── Vercel ────────────────────────────────────────────────────────────────────
+.vercel/
