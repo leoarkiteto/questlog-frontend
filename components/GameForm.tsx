@@ -1,8 +1,8 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
-import { PLATFORMS, STATUSES } from "@/lib/types";
+import { PLATFORMS, STATUSES, statusInfo } from "@/lib/types";
 import type { CatalogResult, Game, GameInput, Status } from "@/lib/types";
 import StarRating from "./StarRating";
 import GameCover from "./GameCover";
@@ -47,6 +47,32 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
 
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Full collection, fetched once on mount, so the form can warn the
+  // moment a title/Steam pick collides with an existing card. The API
+  // re-enforces this on save (409), so a stale list can't create a dupe.
+  const [collection, setCollection] = useState<Game[]>([]);
+  useEffect(() => {
+    api
+      .list()
+      .then(setCollection)
+      .catch(() => setCollection([]));
+  }, []);
+
+  // A game may only appear once — same normalized title or same Steam
+  // app id. Approximates the backend rule (repo.normalizeTitle); the
+  // server re-checks on save (409), so a mismatch here can only cause a
+  // false client-side warning, never a duplicate.
+  const normTitle = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
+  const duplicate = collection.find(
+    (g) =>
+      g.id !== initial?.id &&
+      (normTitle(g.title) === normTitle(title) ||
+        (g.steamAppId != null && g.steamAppId === steamAppId))
+  );
+  const duplicateMessage =
+    duplicate &&
+    `“${duplicate.title}” is already in your collection as ${statusInfo(duplicate.status).label}. A game can only appear once — edit that card to change its list.`;
 
   const runSteamSearch = async (q: string) => {
     const term = q.trim();
@@ -103,6 +129,11 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
 
     if (!title.trim()) {
       setError("Title is required.");
+      return;
+    }
+
+    if (duplicateMessage) {
+      setError(duplicateMessage);
       return;
     }
 
@@ -230,6 +261,14 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
         {steamAppId && (
           <p className="mt-2 text-[11px] text-zinc-600">
             ✓ Linked to Steam app {steamAppId}
+          </p>
+        )}
+        {duplicateMessage && (
+          <p
+            role="alert"
+            className="mt-2 rounded-lg bg-amber-950/50 px-3 py-2 text-sm text-amber-300 ring-1 ring-amber-500/30"
+          >
+            {duplicateMessage}
           </p>
         )}
       </div>
@@ -366,7 +405,7 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
 
       <button
         type="submit"
-        disabled={saving}
+        disabled={saving || !!duplicateMessage}
         className="w-full rounded-xl bg-gradient-to-b from-red-500 to-red-700 py-3 text-sm font-bold text-white shadow-lg shadow-red-900/40 transition hover:from-red-400 hover:to-red-600 active:scale-[0.99] disabled:opacity-50"
       >
         {saving ? "Saving…" : submitLabel}
