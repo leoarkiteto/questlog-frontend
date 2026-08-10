@@ -137,8 +137,6 @@ export default function GameDetail() {
 
   const info = statusInfo(game.status);
   const chips = [
-    game.platform,
-    game.year?.toString(),
     game.genre,
     game.timeToBeatMinutes ? formatTimeToBeat(game.timeToBeatMinutes) : null,
   ].filter((c): c is string => Boolean(c));

@@ -119,13 +119,17 @@ export default function Dashboard() {
 
       {/* Horizontal rows per status */}
       <div className="mt-8">
-        {STATUSES.map((s) => (
-          <GameRow
+        {STATUSES.map((s, i) => (
+          <section
             key={s.value}
-            status={s.value}
-            games={byStatus(s.value)}
-            showAllHref={`/library?filter=${s.value}`}
-          />
+            className={i > 0 ? "border-t border-white/10 pt-8" : ""}
+          >
+            <GameRow
+              status={s.value}
+              games={byStatus(s.value)}
+              showAllHref={`/library?filter=${s.value}`}
+            />
+          </section>
         ))}
       </div>
     </div>
