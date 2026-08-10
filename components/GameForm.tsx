@@ -302,21 +302,18 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
         )}
       </div>
 
-      {/* Rating — centerpiece for played games */}
-      <div>
-        <span className={label}>
-          Rating{" "}
-          {status === "played" || status === "dropped"
-            ? "· how much did you like it?"
-            : "· rate once played"}
-        </span>
-        <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-zinc-900 px-4 py-3">
-          <StarRating value={rating} onChange={setRating} size="lg" />
-          <span className="text-xs text-zinc-500">
-            {rating === 0 ? "Tap a star" : `${rating} / 5`}
-          </span>
+      {/* Rating — only for played / dropped games */}
+      {(status === "played" || status === "dropped") && (
+        <div>
+          <span className={label}>Rating · how much did you like it?</span>
+          <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-zinc-900 px-4 py-3">
+            <StarRating value={rating} onChange={setRating} size="lg" />
+            <span className="text-xs text-zinc-500">
+              {rating === 0 ? "Tap a star" : `${rating} / 5`}
+            </span>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div>
