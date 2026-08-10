@@ -8,6 +8,7 @@ import { STATUSES, statusInfo } from "@/lib/types";
 import type { Game, GameInput, Status } from "@/lib/types";
 import GameCover from "@/components/GameCover";
 import GameCard from "@/components/GameCard";
+import PlatformIcon from "@/components/PlatformIcon";
 import StarRating from "@/components/StarRating";
 import StatusBadge from "@/components/StatusBadge";
 
@@ -136,8 +137,6 @@ export default function GameDetail() {
 
   const info = statusInfo(game.status);
   const chips = [
-    game.platform,
-    game.year?.toString(),
     game.genre,
     game.timeToBeatMinutes ? formatTimeToBeat(game.timeToBeatMinutes) : null,
   ].filter((c): c is string => Boolean(c));
@@ -160,45 +159,53 @@ export default function GameDetail() {
               </span>
             ))}
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-white drop-shadow sm:text-5xl">
-            {game.title}
-          </h1>
-
-          {/* Rating — the centerpiece for played games */}
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-3 rounded-xl bg-black/50 px-3 py-2 backdrop-blur">
-              <StarRating
-                value={game.rating}
-                onChange={(r) => patch({ rating: r })}
-                size="lg"
-                label={`Rate ${game.title}`}
+          <div className="flex items-baseline gap-3">
+            <h1 className="text-3xl font-black tracking-tight text-white drop-shadow sm:text-5xl">
+              {game.title}
+            </h1>
+            {game.platform && (
+              <PlatformIcon
+                platform={game.platform}
+                className="h-4 w-4 shrink-0 text-zinc-400 drop-shadow"
               />
-              <span className="text-xs text-zinc-400">
-                {game.rating > 0 ? `${game.rating} / 5` : "Tap to rate"}
-              </span>
-            </div>
-            {saving && <span className="text-xs text-zinc-500">saving…</span>}
+            )}
           </div>
 
-          {/* Quick status change */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            {STATUSES.map((s) => {
-              const active = s.value === game.status;
-              return (
-                <button
-                  key={s.value}
-                  onClick={() => !active && patch({ status: s.value })}
-                  disabled={active}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold ring-1 transition active:scale-95 ${
-                    active
-                      ? "bg-white/15 text-white ring-white/30"
-                      : "bg-zinc-900/70 text-zinc-400 ring-white/10 hover:text-zinc-100"
-                  }`}
-                >
-                  Move to {s.label}
-                </button>
-              );
-            })}
+          {/* Rating — only for played / dropped games */}
+          {(game.status === "played" || game.status === "dropped") && (
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-3 rounded-xl bg-black/50 px-3 py-2 backdrop-blur">
+                <StarRating
+                  value={game.rating}
+                  onChange={(r) => patch({ rating: r })}
+                  size="lg"
+                  label={`Rate ${game.title}`}
+                />
+                <span className="text-xs text-zinc-400">
+                  {game.rating > 0 ? `${game.rating} / 5` : "Tap to rate"}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Move game to another list */}
+          <div className="mt-4 flex items-center gap-3">
+            <select
+              id="status-select"
+              value={game.status}
+              onChange={(e) => {
+                const next = e.target.value as Status;
+                if (next !== game.status) patch({ status: next });
+              }}
+              className="rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-100 outline-none transition focus:border-red-500/50"
+            >
+              {STATUSES.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            {saving && <span className="text-xs text-zinc-500">saving…</span>}
           </div>
         </div>
       </div>

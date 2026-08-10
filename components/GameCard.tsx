@@ -15,12 +15,13 @@ interface Props {
 }
 
 /**
- * Card shown in the horizontal rows: cover, compact star rating (always
- * visible — filled for rated games, outline for 0/5), and title with a
- * platform icon beside it.
+ * Card shown in the horizontal rows: cover, compact star rating (shown
+ * only for played/dropped games — filled for rated games, outline for
+ * 0/5), and title with a platform icon beside it.
  */
 export default function GameCard({ game, className = "" }: Props) {
   const rated = game.rating > 0;
+  const canRate = game.status === "played" || game.status === "dropped";
 
   return (
     <Link
@@ -33,22 +34,24 @@ export default function GameCard({ game, className = "" }: Props) {
         className="aspect-[2/3] w-full rounded-lg shadow-lg ring-1 ring-white/10 transition duration-200 group-hover:ring-red-500/60 group-hover:shadow-red-500/10"
       />
       <div className="px-0.5">
-        <div className="mb-0.5 flex items-center gap-1">
-          <svg
-            viewBox="0 0 24 24"
-            className={`h-4 w-4 ${
-              rated
-                ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.45)]"
-                : "fill-zinc-700 text-zinc-700"
-            }`}
-            aria-hidden="true"
-          >
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-          <span className={`text-xs font-medium ${rated ? "text-amber-300/90" : "text-zinc-600"}`}>
-            {game.rating}/5
-          </span>
-        </div>
+        {canRate && (
+          <div className="mb-0.5 flex items-center gap-1">
+            <svg
+              viewBox="0 0 24 24"
+              className={`h-4 w-4 ${
+                rated
+                  ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.45)]"
+                  : "fill-zinc-700 text-zinc-700"
+              }`}
+              aria-hidden="true"
+            >
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            <span className={`text-xs font-medium ${rated ? "text-amber-300/90" : "text-zinc-600"}`}>
+              {game.rating}/5
+            </span>
+          </div>
+        )}
         <div className="flex items-center justify-between gap-1">
           <h3
             className="min-w-0 truncate text-sm font-semibold text-zinc-100"

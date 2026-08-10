@@ -38,6 +38,7 @@ export default function StarRating({ value, onChange, size = "md", label }: Prop
           onFocus={() => interactive && setHover(n)}
           onBlur={() => setHover(0)}
           aria-label={`${n} star${n > 1 ? "s" : ""}`}
+          role={interactive ? "radio" : undefined}
           aria-checked={interactive ? shown === n : undefined}
           className={interactive ? "cursor-pointer transition-transform active:scale-90" : "cursor-default"}
         >

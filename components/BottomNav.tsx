@@ -5,13 +5,12 @@ import { usePathname } from "next/navigation";
 
 const items = [
   { href: "/", label: "Home", icon: "M3 10.5L12 3l9 7.5M5 9v11h14V9" },
-  { href: "/search", label: "Search", icon: "M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" },
   { href: "/library", label: "Library", icon: "M4 5h16M4 12h16M4 19h10" },
 ];
 
 /**
- * Mobile-only bottom navigation, mirroring the reference app layout:
- * Home · Search · + (add) · Library.
+ * Mobile-only bottom navigation: Home · + (add) · Library. Search is not
+ * duplicated here — the header's always-visible search bar covers it.
  */
 export default function BottomNav() {
   const pathname = usePathname();
@@ -21,8 +20,8 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/5 bg-zinc-950/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden">
-      <div className="grid grid-cols-4 items-center">
-        {items.slice(0, 2).map((it) => (
+      <div className="grid grid-cols-3 items-center">
+        {items.slice(0, 1).map((it) => (
           <Link
             key={it.href}
             href={it.href}
@@ -52,7 +51,7 @@ export default function BottomNav() {
           Add
         </Link>
 
-        {items.slice(2).map((it) => (
+        {items.slice(1).map((it) => (
           <Link
             key={it.href}
             href={it.href}

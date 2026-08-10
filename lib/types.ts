@@ -69,7 +69,7 @@ export interface StatusInfo {
 }
 
 export const STATUSES: StatusInfo[] = [
-  { value: "wishlist", label: "Wish to Play / Buy", hint: "Games I want", accent: "text-amber-400" },
+  { value: "wishlist", label: "Wishlist", hint: "Games I want", accent: "text-amber-400" },
   { value: "purchased", label: "Purchased", hint: "Bought, not played yet", accent: "text-violet-400" },
   { value: "playing", label: "Currently Playing", hint: "Games I'm on now", accent: "text-sky-400" },
   { value: "played", label: "Played", hint: "Games I finished", accent: "text-emerald-400" },

@@ -5,11 +5,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "vitest run"
   },
   "dependencies": {
     "lucide-react": "^1.28.0",
-    "next": "^15.3.3",
+    "next": "^16.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -23,6 +25,47 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.7",
     "typescript": "^5.8.3",
-    "vercel": "^58.7.1"
+    "vercel": "^58.9.1",
+    "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "@vercel/node": {
+      "undici": "^6.28.0",
+      "path-to-regexp": "^6.3.0"
+    },
+    "@vercel/remix-builder": {
+      "path-to-regexp": "^6.3.0"
+    },
+    "@vercel/backends": {
+      "path-to-regexp": "^8.4.2"
+    },
+    "@vercel/express": {
+      "path-to-regexp": "^8.4.2"
+    },
+    "@vercel/hono": {
+      "path-to-regexp": "^8.4.2"
+    },
+    "@vercel/fun": {
+      "path-to-regexp": "^8.4.2",
+      "tar": "^7.5.22",
+      "@tootallnate/once": "^2.0.1"
+    },
+    "@mapbox/node-pre-gyp": {
+      "tar": "^7.5.22"
+    },
+    "@vercel/python-analysis": {
+      "js-yaml": "^5.2.3",
+      "minimatch": "^10.2.6"
+    },
+    "@vercel/static-config": {
+      "ajv": "^8.20.0"
+    },
+    "@vercel/rust": {
+      "smol-toml": "^1.7.1"
+    },
+    "vercel": {
+      "smol-toml": "^1.7.1",
+      "undici": "^6.28.0"
+    }
   }
 }
