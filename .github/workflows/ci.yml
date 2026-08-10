@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI
 
 on:
   push:
@@ -39,49 +39,3 @@ jobs:
       - name: Production build
         run: npm run build
 
-  deploy:
-    name: Deploy to Vercel
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Check Vercel token configured
-        id: vercel-check
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          # Strip whitespace/newlines so a sloppy secret paste doesn't break auth
-          VERCEL_TOKEN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '[:space:]')"
-          if [ -z "$VERCEL_TOKEN" ]; then
-            configured=false
-            echo "Skip deploy: add VERCEL_TOKEN / VERCEL_ORG_ID / VERCEL_PROJECT_ID secrets to enable CD."
-          else
-            configured=true
-          fi
-          echo "configured=$configured" >> "$GITHUB_OUTPUT"
-
-      - name: Verify Vercel token
-        if: success() && steps.vercel-check.outputs.configured == 'true'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          VERCEL_TOKEN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '[:space:]')"
-          if ! npx vercel@latest whoami --token="$VERCEL_TOKEN"; then
-            echo "::error::VERCEL_TOKEN did not resolve to a Vercel user. Regenerate it at https://vercel.com/account/tokens and update the GitHub secret (no trailing newline/space)."
-            exit 1
-          fi
-
-      - name: Deploy to Vercel
-        if: success() && steps.vercel-check.outputs.configured == 'true'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          VERCEL_TOKEN="$(printf '%s' "$VERCEL_TOKEN" | tr -d '[:space:]')"
-          npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-          npx vercel@latest build --prod --token="$VERCEL_TOKEN"
-          npx vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN"
