@@ -27,15 +27,13 @@ export default function Header() {
     <header className="sticky top-0 z-40 border-b border-white/5 bg-zinc-950/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-red-600 to-red-800 text-sm font-black text-white shadow-md shadow-red-900/40">
-            Q
-          </span>
-          <span className="text-lg font-black tracking-tight text-white">
-            Quest<span className="text-red-500">log</span>
-          </span>
+          <img src="/questlog.png" alt="Questlog" className="h-6 w-auto" />
         </Link>
 
-        <form onSubmit={submit} className="ml-auto flex min-w-0 flex-1 justify-end sm:max-w-sm">
+        <form
+          onSubmit={submit}
+          className="ml-auto flex min-w-0 flex-1 justify-end sm:max-w-sm"
+        >
           <div className="relative w-full max-w-[10rem] transition-all focus-within:max-w-full sm:max-w-full">
             <svg
               viewBox="0 0 24 24"
