@@ -48,9 +48,9 @@ export default function Header() {
               ref={inputRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search games…"
-              aria-label="Search games"
-              className="w-full rounded-full border border-white/10 bg-zinc-900 py-2 pl-9 pr-8 text-sm text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-red-500/50 focus:bg-zinc-900"
+              placeholder="Search your library…"
+              aria-label="Search your library"
+              className="w-full truncate rounded-full border border-white/10 bg-zinc-900 py-2 pl-9 pr-8 text-sm text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-red-500/50 focus:bg-zinc-900"
             />
             {q.length > 0 && (
               <button
@@ -68,7 +68,7 @@ export default function Header() {
         <Link
           href="/games/new"
           aria-label="Add game"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-red-600 text-lg font-bold text-white shadow-lg shadow-red-900/40 transition hover:bg-red-500 active:scale-95"
+          className="hidden h-9 w-9 shrink-0 place-items-center rounded-full bg-red-600 text-lg font-bold text-white shadow-lg shadow-red-900/40 transition hover:bg-red-500 active:scale-95 md:grid"
         >
           +
         </Link>
