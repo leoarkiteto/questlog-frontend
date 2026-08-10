@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
+import { X } from "lucide-react";
 
 /**
  * Sticky top bar: logo, search field, add button.
@@ -10,10 +11,16 @@ import { FormEvent, useState } from "react";
 export default function Header() {
   const router = useRouter();
   const [q, setQ] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     router.push(`/search?q=${encodeURIComponent(q.trim())}`);
+  };
+
+  const clear = () => {
+    setQ("");
+    inputRef.current?.focus();
   };
 
   return (
@@ -38,12 +45,23 @@ export default function Header() {
               <path d="M20 20l-3.5-3.5" strokeWidth="2" strokeLinecap="round" />
             </svg>
             <input
+              ref={inputRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search games…"
               aria-label="Search games"
-              className="w-full rounded-full border border-white/10 bg-zinc-900 py-2 pl-9 pr-3 text-sm text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-red-500/50 focus:bg-zinc-900"
+              className="w-full rounded-full border border-white/10 bg-zinc-900 py-2 pl-9 pr-8 text-sm text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-red-500/50 focus:bg-zinc-900"
             />
+            {q.length > 0 && (
+              <button
+                type="button"
+                onClick={clear}
+                aria-label="Clear search"
+                className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-zinc-400 transition hover:bg-white/10 hover:text-zinc-100"
+              >
+                <X className="h-3.5 w-3.5" strokeWidth={2.5} />
+              </button>
+            )}
           </div>
         </form>
 

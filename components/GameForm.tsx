@@ -7,6 +7,7 @@ import type { CatalogResult, Game, GameInput, Status } from "@/lib/types";
 import StarRating from "./StarRating";
 import GameCover from "./GameCover";
 import StatusIcon from "./StatusIcon";
+import { X } from "lucide-react";
 
 const SOURCE_LABEL: Record<string, string> = {
   steam: "Steam",
@@ -44,6 +45,9 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
   const [steamFetching, setSteamFetching] = useState(false);
   const [steamError, setSteamError] = useState<string | null>(null);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Bumped on every title change/clear so an in-flight catalog search
+  // that resolves late is discarded instead of repopulating suggestions.
+  const searchSeq = useRef(0);
 
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -75,27 +79,40 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
     `“${duplicate.title}” is already in your collection as ${statusInfo(duplicate.status).label}. A game can only appear once — edit that card to change its list.`;
 
   const runSteamSearch = async (q: string) => {
+    const seq = ++searchSeq.current;
     const term = q.trim();
     if (term.length < 2) return;
     setSteamSearching(true);
     setSteamError(null);
     try {
       const results = await api.catalog.search(term);
+      if (seq !== searchSeq.current) return; // superseded by newer input
       setSteamResults(results);
       if (results.length === 0) setSteamError(`No matches for "${term}".`);
     } catch (e) {
+      if (seq !== searchSeq.current) return;
       setSteamResults([]);
       setSteamError(e instanceof Error ? e.message : "Search failed.");
     } finally {
-      setSteamSearching(false);
+      if (seq === searchSeq.current) setSteamSearching(false);
     }
   };
 
   const handleTitleChange = (v: string) => {
+    searchSeq.current++; // discard any in-flight search
     setTitle(v);
     setSteamResults([]); // previous suggestions no longer match
     if (searchTimer.current) clearTimeout(searchTimer.current);
     searchTimer.current = setTimeout(() => runSteamSearch(v), 500);
+  };
+
+  const clearTitle = () => {
+    searchSeq.current++; // discard any in-flight search
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    setTitle("");
+    setSteamResults([]);
+    setSteamError(null);
+    setSteamSearching(false);
   };
 
   const pickCatalogResult = async (r: CatalogResult) => {
@@ -199,14 +216,26 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
           Title *
         </label>
         <div className="flex gap-2">
-          <input
-            id="title"
-            value={title}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            placeholder="e.g. Elden Ring"
-            className={field}
-            autoFocus
-          />
+          <div className="relative w-full">
+            <input
+              id="title"
+              value={title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              placeholder="e.g. Elden Ring"
+              className={`${field} pr-9`}
+              autoFocus
+            />
+            {title && (
+              <button
+                type="button"
+                onClick={clearTitle}
+                aria-label="Clear title"
+                className="absolute right-2 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-full text-zinc-400 transition hover:bg-white/10 hover:text-zinc-100"
+              >
+                <X className="h-3.5 w-3.5" strokeWidth={2.5} />
+              </button>
+            )}
+          </div>
           <button
             type="button"
             onClick={() => runSteamSearch(title)}
