@@ -1,6 +1,6 @@
 import Link from "next/link";
-import GameCard from "./GameCard";
-import StatusIcon from "./StatusIcon";
+import GameCard from "../../molecules/GameCard/GameCard.tsx";
+import StatusIcon from "../../atoms/StatusIcon/StatusIcon.tsx";
 import { statusInfo } from "@/lib/types";
 import type { Game, Status } from "@/lib/types";
 

@@ -4,9 +4,21 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import { PLATFORMS, STATUSES, statusInfo } from "@/lib/types";
 import type { CatalogResult, Game, GameInput, Status } from "@/lib/types";
-import StarRating from "./StarRating";
-import GameCover from "./GameCover";
-import StatusIcon from "./StatusIcon";
+import StarRating from "../../atoms/StarRating/StarRating.tsx";
+import GameCover from "../../atoms/GameCover/GameCover.tsx";
+import StatusIcon from "../../atoms/StatusIcon/StatusIcon.tsx";
+import { Input } from "../../atoms/Input/Input.tsx";
+import { Textarea } from "../../atoms/Textarea/Textarea.tsx";
+import { Button } from "../../atoms/Button/Button.tsx";
+import { ToggleGroup, ToggleGroupItem } from "../../molecules/ToggleGroup/ToggleGroup.tsx";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../molecules/Select/Select.tsx";
+import { Alert } from "../../molecules/Alert/Alert.tsx";
 import { X } from "lucide-react";
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -76,7 +88,7 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
   );
   const duplicateMessage =
     duplicate &&
-    `“${duplicate.title}” is already in your collection as ${statusInfo(duplicate.status).label}. A game can only appear once — edit that card to change its list.`;
+    `"${duplicate.title}" is already in your collection as ${statusInfo(duplicate.status).label}. A game can only appear once — edit that card to change its list.`;
 
   const runSteamSearch = async (q: string) => {
     const seq = ++searchSeq.current;
@@ -181,8 +193,6 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
     }
   };
 
-  const field =
-    "w-full rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-red-500/50";
   const label = "mb-1.5 block text-xs font-semibold uppercase tracking-wider text-zinc-400";
 
   return (
@@ -190,24 +200,24 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
       {/* Status picker */}
       <div>
         <span className={label}>List</span>
-        <div className="flex flex-wrap gap-2">
+        <ToggleGroup
+          value={[status]}
+          onValueChange={(v) => v.length > 0 && setStatus(v[0] as Status)}
+          variant="outline"
+          spacing={2}
+          className="flex flex-wrap"
+        >
           {STATUSES.map((s) => (
-            <button
+            <ToggleGroupItem
               key={s.value}
-              type="button"
-              onClick={() => setStatus(s.value)}
-              aria-pressed={status === s.value}
-              className={`flex items-center gap-1.5 rounded-xl px-2 py-2.5 text-xs font-semibold ring-1 transition active:scale-[0.98] ${
-                status === s.value
-                  ? "bg-red-600 text-white ring-red-500"
-                  : "bg-zinc-900 text-zinc-400 ring-white/10 hover:text-zinc-200"
-              }`}
+              value={s.value}
+              className="data-[state=on]:bg-red-600 data-[state=on]:text-white data-[state=on]:ring-red-500 flex items-center gap-1.5 rounded-xl px-2 py-2.5 text-xs font-semibold ring-1 ring-white/10 transition active:scale-[0.98]"
             >
               <StatusIcon status={s.value} className="h-3.5 w-3.5" />
               {s.label}
-            </button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       </div>
 
       {/* Title + Steam suggestions */}
@@ -217,12 +227,12 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
         </label>
         <div className="flex gap-2">
           <div className="relative w-full">
-            <input
+            <Input
               id="title"
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="e.g. Elden Ring"
-              className={`${field} pr-9`}
+              className="pr-9"
               autoFocus
             />
             {title && (
@@ -236,14 +246,15 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
               </button>
             )}
           </div>
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={() => runSteamSearch(title)}
             disabled={steamSearching || steamFetching || title.trim().length < 2}
-            className="shrink-0 rounded-xl bg-zinc-800 px-4 py-2.5 text-sm font-semibold text-zinc-100 ring-1 ring-white/10 transition hover:bg-zinc-700 disabled:opacity-50"
+            className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold"
           >
             {steamSearching ? "Searching…" : "Search Steam"}
-          </button>
+          </Button>
         </div>
         <p className="mt-1 text-[11px] text-zinc-600">
           Start typing — tap a Steam match to auto-fill cover, year, genre, platform &amp; description.
@@ -293,12 +304,9 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
           </p>
         )}
         {duplicateMessage && (
-          <p
-            role="alert"
-            className="mt-2 rounded-lg bg-amber-950/50 px-3 py-2 text-sm text-amber-300 ring-1 ring-amber-500/30"
-          >
+          <Alert variant="destructive" className="mt-2 bg-amber-950/50 !text-amber-300 ring-1 ring-amber-500/30">
             {duplicateMessage}
-          </p>
+          </Alert>
         )}
       </div>
 
@@ -320,29 +328,28 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
           <label htmlFor="platform" className={label}>
             Platform
           </label>
-          <select
-            id="platform"
-            value={platform}
-            onChange={(e) => setPlatform(e.target.value)}
-            className={field}
-          >
-            <option value="">— Select platform —</option>
-            {/* Keep values outside the list (Steam/IGDB auto-fill, legacy games) */}
-            {platform !== "" && !PLATFORMS.some((p) => p === platform) && (
-              <option value={platform}>{platform}</option>
-            )}
-            {PLATFORMS.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
+          <Select value={platform} onValueChange={(v) => setPlatform(v ?? "")}>
+            <SelectTrigger id="platform" className="w-full">
+              <SelectValue placeholder="— Select platform —" />
+            </SelectTrigger>
+            <SelectContent>
+              {/* Keep values outside the list (Steam/IGDB auto-fill, legacy games) */}
+              {platform !== "" && !PLATFORMS.some((p) => p === platform) && (
+                <SelectItem value={platform}>{platform}</SelectItem>
+              )}
+              {PLATFORMS.map((p) => (
+                <SelectItem key={p} value={p}>
+                  {p}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <label htmlFor="year" className={label}>
             Year
           </label>
-          <input
+          <Input
             id="year"
             type="number"
             min={1950}
@@ -350,7 +357,6 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
             value={year}
             onChange={(e) => setYear(e.target.value)}
             placeholder="2022"
-            className={field}
           />
         </div>
       </div>
@@ -359,12 +365,11 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
         <label htmlFor="genre" className={label}>
           Genre
         </label>
-        <input
+        <Input
           id="genre"
           value={genre}
           onChange={(e) => setGenre(e.target.value)}
           placeholder="e.g. Action RPG"
-          className={field}
         />
       </div>
 
@@ -374,13 +379,12 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
           <label htmlFor="coverUrl" className={label}>
             Cover image URL
           </label>
-          <input
+          <Input
             id="coverUrl"
             type="url"
             value={coverUrl}
             onChange={(e) => setCoverUrl(e.target.value)}
             placeholder="https://…/cover.jpg"
-            className={field}
           />
           <p className="mt-1 text-[11px] text-zinc-600">
             Auto-filled from Steam, or paste your own link.
@@ -399,13 +403,13 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
         <label htmlFor="description" className={label}>
           Description
         </label>
-        <textarea
+        <Textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
           placeholder="Short description of the game…"
-          className={`${field} resize-y`}
+          className="resize-y"
         />
       </div>
 
@@ -413,29 +417,31 @@ export default function GameForm({ initial, submitLabel, onSubmit }: Props) {
         <label htmlFor="notes" className={label}>
           Notes
         </label>
-        <textarea
+        <Textarea
           id="notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
           placeholder="What did you think? Where to buy it?…"
-          className={`${field} resize-y`}
+          className="resize-y"
         />
       </div>
 
       {error && (
-        <p role="alert" className="rounded-lg bg-red-950/50 px-3 py-2 text-sm text-red-300 ring-1 ring-red-500/30">
+        <Alert variant="destructive" className="bg-red-950/50 !text-red-300 ring-1 ring-red-500/30">
           {error}
-        </p>
+        </Alert>
       )}
 
-      <button
+      <Button
         type="submit"
+        variant="destructive"
+        size="lg"
         disabled={saving || !!duplicateMessage}
-        className="w-full rounded-xl bg-gradient-to-b from-red-500 to-red-700 py-3 text-sm font-bold text-white shadow-lg shadow-red-900/40 transition hover:from-red-400 hover:to-red-600 active:scale-[0.99] disabled:opacity-50"
+        className="w-full rounded-xl bg-gradient-to-b from-red-500 to-red-700 py-3 text-sm font-bold shadow-lg shadow-red-900/40 active:scale-[0.99]"
       >
         {saving ? "Saving…" : submitLabel}
-      </button>
+      </Button>
     </form>
   );
 }

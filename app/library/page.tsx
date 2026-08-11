@@ -5,9 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { STATUSES } from "@/lib/types";
 import type { Game, Status } from "@/lib/types";
-import GameCard from "@/components/GameCard";
-import EmptyState from "@/components/EmptyState";
-import StatusIcon from "@/components/StatusIcon";
+import GameCard from "@/components/molecules/GameCard/GameCard";
+import EmptyState from "@/components/molecules/EmptyState/EmptyState";
+import StatusIcon from "@/components/atoms/StatusIcon/StatusIcon";
 import { SlidersHorizontal, X } from "lucide-react";
 
 type Sort = "recent" | "title" | "rating";

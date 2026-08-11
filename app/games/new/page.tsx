@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import type { GameInput } from "@/lib/types";
-import GameForm from "@/components/GameForm";
+import GameForm from "@/components/organisms/GameForm/GameForm";
 
 export default function NewGamePage() {
   const router = useRouter();

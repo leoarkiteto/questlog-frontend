@@ -5,9 +5,9 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { STATUSES } from "@/lib/types";
 import type { Game } from "@/lib/types";
-import GameRow from "@/components/GameRow";
-import GameCover from "@/components/GameCover";
-import StarRating from "@/components/StarRating";
+import GameRow from "@/components/organisms/GameRow/GameRow";
+import GameCover from "@/components/atoms/GameCover/GameCover";
+import StarRating from "@/components/atoms/StarRating/StarRating";
 
 export default function Dashboard() {
   const [games, setGames] = useState<Game[]>([]);

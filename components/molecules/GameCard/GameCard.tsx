@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import GameCover from "./GameCover";
-import PlatformIcon from "./PlatformIcon";
+import GameCover from "../../atoms/GameCover/GameCover.tsx";
+import PlatformIcon from "../../atoms/PlatformIcon/PlatformIcon.tsx";
 import type { Game } from "@/lib/types";
 
 interface Props {

@@ -1,6 +1,7 @@
 import { statusInfo } from "@/lib/types";
 import type { Status } from "@/lib/types";
-import StatusIcon from "./StatusIcon";
+import StatusIcon from "../../atoms/StatusIcon/StatusIcon.tsx";
+import { Badge } from "../../atoms/Badge/Badge.tsx";
 
 const BADGE: Record<Status, string> = {
   wishlist: "bg-amber-400/10 text-amber-300 ring-amber-400/30",
@@ -12,11 +13,11 @@ const BADGE: Record<Status, string> = {
 
 export default function StatusBadge({ status }: { status: Status }) {
   return (
-    <span
+    <Badge
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${BADGE[status]}`}
     >
       <StatusIcon status={status} className="h-3 w-3" />
       {statusInfo(status).label}
-    </span>
+    </Badge>
   );
 }

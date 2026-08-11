@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import type { Game } from "@/lib/types";
-import GameCard from "@/components/GameCard";
-import EmptyState from "@/components/EmptyState";
+import GameCard from "@/components/molecules/GameCard/GameCard";
+import EmptyState from "@/components/molecules/EmptyState/EmptyState";
 
 // Results view for the header search bar. There is intentionally no
 // search input here — the search bar lives once, in the header.

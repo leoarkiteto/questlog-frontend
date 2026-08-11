@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "../../atoms/Button/Button.tsx";
 
 interface Props {
   title: string;
@@ -13,12 +14,9 @@ export default function EmptyState({ title, message, actionHref, actionLabel }: 
       <p className="text-sm font-semibold text-zinc-300">{title}</p>
       {message && <p className="max-w-xs text-xs text-zinc-500">{message}</p>}
       {actionHref && (
-        <Link
-          href={actionHref}
-          className="mt-2 rounded-full bg-red-600 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-red-500"
-        >
+        <Button variant="destructive" nativeButton={false} className="mt-2 rounded-full px-4 py-1.5 text-sm font-semibold" render={<Link href={actionHref} />}>
           {actionLabel ?? "Add a game"}
-        </Link>
+        </Button>
       )}
     </div>
   );

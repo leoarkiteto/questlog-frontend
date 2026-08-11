@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import type { Game, GameInput } from "@/lib/types";
-import GameForm from "@/components/GameForm";
+import GameForm from "@/components/organisms/GameForm/GameForm";
 
 export default function EditGamePage() {
   const params = useParams<{ id: string }>();

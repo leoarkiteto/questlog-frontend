@@ -6,10 +6,10 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { statusInfo } from "@/lib/types";
 import type { Game } from "@/lib/types";
-import GameCover from "@/components/GameCover";
-import GameCard from "@/components/GameCard";
-import PlatformIcon from "@/components/PlatformIcon";
-import StatusBadge from "@/components/StatusBadge";
+import GameCover from "@/components/atoms/GameCover/GameCover";
+import GameCard from "@/components/molecules/GameCard/GameCard";
+import PlatformIcon from "@/components/atoms/PlatformIcon/PlatformIcon";
+import StatusBadge from "@/components/molecules/StatusBadge/StatusBadge";
 
 export default function GameDetail() {
   const params = useParams<{ id: string }>();
