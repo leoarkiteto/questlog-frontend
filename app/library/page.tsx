@@ -107,6 +107,17 @@ function LibraryContent() {
     return () => window.removeEventListener("keydown", onKey);
   }, [panelOpen]);
 
+  // Lock body scroll while the filter panel is open — only the pane
+  // (its content area is overflow-y-auto) should scroll.
+  useEffect(() => {
+    if (!panelOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [panelOpen]);
+
   const shown = useMemo(() => {
     const matches = games.filter(
       (g) =>
@@ -156,7 +167,7 @@ function LibraryContent() {
       ) : (
         <div className="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
           {shown.map((g) => (
-            <GameCard key={g.id} game={g} className="w-full" />
+            <GameCard key={g.id} game={g} className="w-full" glow={g.status === "playing"} />
           ))}
         </div>
       )}

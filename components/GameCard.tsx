@@ -12,6 +12,8 @@ interface Props {
    * (e.g. "w-32 shrink-0 snap-start sm:w-40"), "w-full" in grids.
    */
   className?: string;
+  /** Highlight the cover with a colored glow (e.g. for "Currently Playing" games). */
+  glow?: boolean;
 }
 
 /**
@@ -19,10 +21,13 @@ interface Props {
  * only for played/dropped games — filled for rated games, outline for
  * 0/5), and title with a platform icon beside it.
  */
-export default function GameCard({ game, className = "" }: Props) {
+export default function GameCard({ game, className = "", glow = false }: Props) {
   const rated = game.rating > 0;
   const canRate = game.status === "played" || game.status === "dropped";
 
+  const coverClasses = glow
+    ? "aspect-[2/3] w-full rounded-lg ring-2 ring-orange-400/80 shadow-[0_0_18px_rgba(251,146,60,0.45)] transition duration-200 group-hover:ring-orange-300 group-hover:shadow-[0_0_24px_rgba(253,186,116,0.65)]"
+    : "aspect-[2/3] w-full rounded-lg shadow-lg ring-1 ring-white/10 transition duration-200 group-hover:ring-red-500/60 group-hover:shadow-red-500/10";
   return (
     <Link
       href={`/games/${game.id}`}
@@ -31,7 +36,7 @@ export default function GameCard({ game, className = "" }: Props) {
       <GameCover
         title={game.title}
         src={game.coverUrl}
-        className="aspect-[2/3] w-full rounded-lg shadow-lg ring-1 ring-white/10 transition duration-200 group-hover:ring-red-500/60 group-hover:shadow-red-500/10"
+        className={coverClasses}
       />
       <div className="px-0.5">
         {canRate && (

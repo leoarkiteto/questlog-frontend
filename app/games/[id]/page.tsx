@@ -4,12 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
-import { STATUSES, statusInfo } from "@/lib/types";
-import type { Game, GameInput, Status } from "@/lib/types";
+import { statusInfo } from "@/lib/types";
+import type { Game } from "@/lib/types";
 import GameCover from "@/components/GameCover";
 import GameCard from "@/components/GameCard";
 import PlatformIcon from "@/components/PlatformIcon";
-import StarRating from "@/components/StarRating";
 import StatusBadge from "@/components/StatusBadge";
 
 export default function GameDetail() {
@@ -18,7 +17,6 @@ export default function GameDetail() {
   const [game, setGame] = useState<Game | null>(null);
   const [related, setRelated] = useState<Game[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
   const [steamBusy, setSteamBusy] = useState(false);
 
   const load = useCallback(async () => {
@@ -39,32 +37,6 @@ export default function GameDetail() {
   useEffect(() => {
     load();
   }, [load]);
-
-  // Persist a single field (rating / status) and update locally.
-  const patch = async (next: Partial<GameInput>) => {
-    if (!game) return;
-    setSaving(true);
-    try {
-      const updated = await api.update(game.id, {
-        title: game.title,
-        status: next.status ?? game.status,
-        rating: next.rating ?? game.rating,
-        platform: game.platform,
-        year: game.year,
-        genre: game.genre,
-        coverUrl: game.coverUrl,
-        description: game.description,
-        notes: game.notes,
-        steamAppId: game.steamAppId,
-        timeToBeatMinutes: game.timeToBeatMinutes,
-      });
-      setGame(updated);
-    } catch (e) {
-      alert(e instanceof Error ? e.message : "Save failed.");
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const remove = async () => {
     if (!game) return;
@@ -171,42 +143,21 @@ export default function GameDetail() {
             )}
           </div>
 
-          {/* Rating — only for played / dropped games */}
-          {(game.status === "played" || game.status === "dropped") && (
+          {/* Rating — read-only, only for played / dropped games */}
+          {(game.status === "played" || game.status === "dropped") && game.rating > 0 && (
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-3 rounded-xl bg-black/50 px-3 py-2 backdrop-blur">
-                <StarRating
-                  value={game.rating}
-                  onChange={(r) => patch({ rating: r })}
-                  size="lg"
-                  label={`Rate ${game.title}`}
-                />
-                <span className="text-xs text-zinc-400">
-                  {game.rating > 0 ? `${game.rating} / 5` : "Tap to rate"}
+              <div className="flex items-center gap-2 rounded-xl bg-black/50 px-3 py-2 backdrop-blur">
+                <span aria-hidden="true">⭐️</span>
+                <span
+                  className="text-sm font-semibold text-zinc-100"
+                  aria-label={`Rated ${game.rating} out of 5`}
+                >
+                  <span className="text-lg leading-none">{game.rating}</span>
+                  <span className="text-xs font-medium text-zinc-400">/5</span>
                 </span>
               </div>
             </div>
           )}
-
-          {/* Move game to another list */}
-          <div className="mt-4 flex items-center gap-3">
-            <select
-              id="status-select"
-              value={game.status}
-              onChange={(e) => {
-                const next = e.target.value as Status;
-                if (next !== game.status) patch({ status: next });
-              }}
-              className="rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-100 outline-none transition focus:border-red-500/50"
-            >
-              {STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-            {saving && <span className="text-xs text-zinc-500">saving…</span>}
-          </div>
         </div>
       </div>
 
